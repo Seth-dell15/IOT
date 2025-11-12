@@ -10,7 +10,7 @@ L’administrateur dispose d’une interface connectée à une base de données 
 
 - Visualiser la liste de tous les détenteurs de carte RFID, leur rôle (niveau d’accès) et les logs d’utilisation (date et heure de la dernière utilisation).
 
-- Consulter la liste des serrures installées dans l’établissement, avec leur identifiant unique (ID) et les rôles autorisés à les déverrouiller.
+- Consulter la liste des serrures installées dans l’établissement, pouvoir en ajouter, avec leur identifiant unique (ID) et les rôles autorisés à les déverrouiller.
 
 - Créer, modifier ou supprimer des rôles et utilisateurs, puis leur attribuer les droits d’accès appropriés.
 

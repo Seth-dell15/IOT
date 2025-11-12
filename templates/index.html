@@ -26,6 +26,46 @@
                 {% endfor %}
             </tbody>
         </table>
+        <h2>Serrures</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>UID</th>
+                    <th>Nom</th>
+                    <th>Rôles autorisés</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for serrure in serrures %}
+                <tr>
+                    <td>{{ serrure[1] }}</td>
+                    <td>{{ serrure[2] }}</td>
+                    <td>{{ serrure[3] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Logs d'utilisation</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>UID carte</th>
+                    <th>UID serrure</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log[1] }}</td>
+                    <td>{{ log[2] }}</td>
+                    <td>{{ log[3] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
     </div>
 </body>
 </html>
