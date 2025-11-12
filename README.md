@@ -48,5 +48,9 @@ Il pourra ainsi surveiller les échanges sur le broker, identifier les cartes RF
 
 - Breadboards : Permettent d’assurer les connexions électriques entre les différents composants du montage.
 
+# Convention de nommage
+
+*PascalCase* : nom de fonctions et fichiers, *camelcase* pour les variables
+
 
 _LEFEBBVRE Lou, CABANES Hugo, CAETANO Maël_
