@@ -1,11 +1,16 @@
 # main.py
 
 ## Code pour lancer le serveur : python -m uvicorn main:app --reload
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from paho.mqtt import client as mqtt_client
 import sqlite3
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="Serrure connectée")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 BROKER = "broker.emqx.io"
 PORT = 1883
@@ -25,6 +30,17 @@ CREATE TABLE IF NOT EXISTS cartes (
 )
 """)
 conn.commit()
+
+
+# --- Route web ---
+@app.get("/", response_class=HTMLResponse)
+def index(request: Request):
+    conn_local = sqlite3.connect("serrure.db")
+    cursor_local = conn_local.cursor()
+    cursor_local.execute("SELECT uid, role FROM cartes")
+    cartes = cursor_local.fetchall()
+    conn_local.close()
+    return templates.TemplateResponse("index.html", {"request": request, "cartes": cartes})
 
 # --- MQTT ---
 def on_message(client, userdata, msg):
@@ -73,6 +89,3 @@ async def startup_event():
         # UID déjà présent
         pass
 
-@app.get("/")
-def root():
-    return {"status": "Serveur serrure en ligne"}
