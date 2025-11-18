@@ -2,6 +2,12 @@
 
 ## Lancer le serveur : python -m uvicorn main:app --reload
 
+## Exemple de réponse attendu 
+# {
+#     "uid_carte": "123456ABCD",
+#     "uid_serrure": "01"
+# }
+
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -108,17 +114,25 @@ def pairing_send(code: str = Form(...)):
 
 
 
-
+from typing import List
 
 @app.post("/serrures/ajouter")
-def ajouter_serrure(uid: str = Form(...), nom: str = Form(...), roles_autorises: str = Form(...)):
+def ajouter_serrure(
+    uid: str = Form(...),
+    nom: str = Form(...),
+    roles_autorises: List[str] = Form(default=[])  # ← liste vide si rien n'est sélectionné
+):
+    roles_str = ",".join(roles_autorises)  # transforme la liste en chaîne
     try:
-        cursor.execute("INSERT INTO serrures (uid, nom, roles_autorises) VALUES (?, ?, ?)",
-                       (uid, nom, roles_autorises))
+        cursor.execute(
+            "INSERT INTO serrures (uid, nom, roles_autorises) VALUES (?, ?, ?)",
+            (uid, nom, roles_str)
+        )
         conn.commit()
     except sqlite3.IntegrityError:
         pass
     return RedirectResponse("/", status_code=303)
+
 
 
 @app.post("/serrures/supprimer")
