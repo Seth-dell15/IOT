@@ -169,9 +169,10 @@ def cartes_page(request: Request):
 
 
 @app.post("/cartes/ajouter")
-def cartes_ajouter(uid: str = Form(...)):
+def cartes_ajouter(uid: str = Form(...), roles_autorises: list[str] = Form(default=["invité"])):
+    roles_str = ",".join(roles_autorises)
     try:
-        cursor.execute("INSERT INTO cartes (uid, role) VALUES (?, ?)", (uid, "invité"))
+        cursor.execute("INSERT INTO cartes (uid, role) VALUES (?, ?)", (uid, roles_str))
         conn.commit()
     except sqlite3.IntegrityError:
         pass

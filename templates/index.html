@@ -65,12 +65,19 @@
 </table>
 
 
-<!-- Ajouter une carte -->
 <h3>Ajouter une carte</h3>
 <form method="post" action="/cartes/ajouter" style="display:flex; gap:10px; align-items:center;">
     <input type="text" name="uid" placeholder="UID de la carte" required class="form-control" style="width:200px;">
+    
+    <select name="roles_autorises" multiple class="form-select form-select-sm d-inline-block" style="width:150px; height:90px;">
+        {% for role in roles %}
+            <option value="{{ role[1] }}">{{ role[1] }}</option>
+        {% endfor %}
+    </select>
+    
     <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
 </form>
+
 
 <!-- Serrures -->
 <h2 class="mt-4">Serrures</h2>
