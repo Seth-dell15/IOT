@@ -2,15 +2,15 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Serrure connectée</title>
+    <title>Système de gestion des accès</title>
     <link rel="stylesheet" href="/static/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body class="p-5">
 <div class="container">
-
     <h1 class="mb-4">Système de gestion des accès</h1>
+
+    <!-- Appairage d'une serrure -->
     <div class="mb-4">
         <h3>Appairage d'une serrure</h3>
         <form id="pairing-form" style="display:flex; gap:10px; align-items:center;">
@@ -20,160 +20,144 @@
         <div id="pairing-status" class="mt-2"></div>
     </div>
 
-<!-- Cartes -->
-<h2>Cartes RFID</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>UID</th>
-            <th>Rôles</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
+    <!-- Cartes -->
+    <h2>Cartes RFID</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>UID</th>
+                <th>Rôles</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for carte in cartes %}
-        <tr>
-            <td>{{ carte[0] }}</td>
-            <td>{{ carte[1] }}</td> 
-            <td>
-                <!-- Supprimer la carte -->
-                <form method="post" action="/cartes/supprimer" style="display:inline;">
-                    <input type="hidden" name="uid" value="{{ carte[0] }}">
-                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                </form>
+            <tr>
+                <td>{{ carte[0] }}</td>
+                <td>{{ carte[1] }}</td>
+                <td>
+                    <!-- Supprimer la carte -->
+                    <form method="post" action="/cartes/supprimer" style="display:inline;">
+                        <input type="hidden" name="uid" value="{{ carte[0] }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
 
-
-                <!-- Modifier les rôles autorisés d'une carte -->
-                <form method="post" action="/cartes/modifier_roles/{{ carte[0] }}" style="display:inline;">
-                    {% set roles_carte = carte[1].split(',') if carte[1] else [] %}
-                    <select name="roles_autorises" multiple
-                            class="form-select form-select-sm d-inline-block"
-                            style="width:150px; height:90px;">
-                        {% for role in roles %}
-                            <option value="{{ role[1] }}"
-                                {% if role[1] in roles_carte %}selected{% endif %}>
-                                {{ role[1] }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
-                </form>
-            </td>
-        </tr>
+                    <!-- Modifier les rôles -->
+                    <form method="post" action="/cartes/modifier_roles/{{ carte[0] }}" style="display:inline;">
+                        {% set roles_carte = carte[1].split(',') if carte[1] else [] %}
+                        <select name="roles_autorises" multiple class="form-select form-select-sm d-inline-block" style="width:150px; height:90px;">
+                            {% for role in roles %}
+                                <option value="{{ role[1] }}" {% if role[1] in roles_carte %}selected{% endif %}>
+                                    {{ role[1] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
+                    </form>
+                </td>
+            </tr>
         {% endfor %}
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-
-<h3>Ajouter une carte</h3>
-<form method="post" action="/cartes/ajouter" style="display:flex; gap:10px; align-items:center;">
-    <input type="text" name="uid" placeholder="UID de la carte" required class="form-control" style="width:200px;">
-    
-    <select name="roles_autorises" multiple class="form-select form-select-sm d-inline-block" style="width:150px; height:90px;">
-        {% for role in roles %}
-            <option value="{{ role[1] }}">{{ role[1] }}</option>
-        {% endfor %}
-    </select>
-    
-    <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
-</form>
-
-
-<!-- Serrures -->
-<h2 class="mt-4">Serrures</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>UID</th>
-            <th>Nom</th>
-            <th>Nom modifiable</th>
-            <th>Rôles autorisés</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for serrure in serrures %}
-        <tr>
-            <td>{{ serrure[1] }}</td>
-            <td>{{ serrure[2] }}</td>
-            <td>
-                <form method="post" action="/serrures/modifier_nom/{{ serrure[1] }}" style="display:inline;">
-                    <input type="text" name="nom" value="{{ serrure[2] }}" class="form-control form-control-sm" style="width:auto; display:inline-block;">
-                    <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
-                </form>
-            </td>
-            <td>
-    {% set roles_serrure = serrure[3].split(',') if serrure[3] else [] %}
-    {{ roles_serrure | join(', ') }}
-</td>
-<td>
-    <form method="post" action="/serrures/modifier_roles/{{ serrure[1] }}" style="display:inline;">
-        <select name="roles_autorises" multiple
-                class="form-select form-select-sm d-inline-block"
-                style="width:150px; height:90px;">
+    <!-- Ajouter une carte -->
+    <h3>Ajouter une carte</h3>
+    <form method="post" action="/cartes/ajouter" style="display:flex; gap:10px; align-items:center;">
+        <input type="text" name="uid" placeholder="UID de la carte" required class="form-control" style="width:200px;">
+        <select name="roles_autorises" multiple class="form-select form-select-sm d-inline-block" style="width:150px; height:90px;">
             {% for role in roles %}
-                <option value="{{ role[1] }}"
-                    {% if role[1] in roles_serrure %}selected{% endif %}>
-                    {{ role[1] }}
-                </option>
+                <option value="{{ role[1] }}">{{ role[1] }}</option>
             {% endfor %}
         </select>
-        <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
+        <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
     </form>
-</td>
 
-            <td>
-                <!-- Supprimer la serrure -->
-                <form method="post" action="/serrures/supprimer" style="display:inline;">
-                    <input type="hidden" name="uid" value="{{ serrure[1] }}">
-                    <button class="btn btn-danger btn-sm">Supprimer</button>
-                </form>
-            </td>
-        </tr>
+    <!-- Serrures -->
+    <h2 class="mt-4">Serrures</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>UID</th>
+                <th>Nom</th>
+                <th>Nom modifiable</th>
+                <th>Rôles autorisés</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for serrure in serrures %}
+            <tr>
+                <td>{{ serrure[1] }}</td>
+                <td>{{ serrure[2] }}</td>
+                <td>
+                    <form method="post" action="/serrures/modifier_nom/{{ serrure[1] }}" style="display:inline;">
+                        <input type="text" name="nom" value="{{ serrure[2] }}" class="form-control form-control-sm" style="width:auto; display:inline-block;">
+                        <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
+                    </form>
+                </td>
+                <td>
+                    {% set roles_serrure = serrure[3].split(',') if serrure[3] else [] %}
+                    {{ roles_serrure | join(', ') }}
+                </td>
+                <td>
+                    <form method="post" action="/serrures/modifier_roles/{{ serrure[1] }}" style="display:inline;">
+                        <select name="roles_autorises" multiple class="form-select form-select-sm d-inline-block" style="width:150px; height:90px;">
+                            {% for role in roles %}
+                                <option value="{{ role[1] }}" {% if role[1] in roles_serrure %}selected{% endif %}>
+                                    {{ role[1] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Modifier</button>
+                    </form>
+
+                    <!-- Supprimer la serrure -->
+                    <form method="post" action="/serrures/supprimer" style="display:inline;">
+                        <input type="hidden" name="uid" value="{{ serrure[1] }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
         {% endfor %}
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
-<!-- Ajouter une serrure -->
-<h3>Ajouter une serrure</h3>
-<form method="post" action="/serrures/ajouter" style="display:flex; gap:10px; align-items:center;" class="mb-4">
-    <input type="text" name="uid" placeholder="UID de la serrure" required class="form-control" style="width:200px;">
-    <input type="text" name="nom" placeholder="Nom de la serrure" required class="form-control" style="width:200px;">
-    <select name="roles_autorises" multiple class="form-select" style="width:200px; height:90px;">
+    <!-- Ajouter une serrure -->
+    <h3>Ajouter une serrure</h3>
+    <form method="post" action="/serrures/ajouter" style="display:flex; gap:10px; align-items:center;">
+        <input type="text" name="uid" placeholder="UID de la serrure" required class="form-control" style="width:200px;">
+        <input type="text" name="nom" placeholder="Nom de la serrure" required class="form-control" style="width:200px;">
+        <select name="roles_autorises" multiple class="form-select" style="width:200px; height:90px;">
+            {% for role in roles %}
+                <option value="{{ role[1] }}">{{ role[1] }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
+    </form>
+
+    <!-- Rôles -->
+    <h2>Rôles disponibles</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for role in roles %}
-            <option value="{{ role[1] }}">{{ role[1] }}</option>
+            <tr>
+                <td>{{ role[1] }}</td>
+                <td>
+                    <form method="post" action="/roles/supprimer" style="display:inline;">
+                        <input type="hidden" name="nom" value="{{ role[1] }}">
+                        <button class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
         {% endfor %}
-    </select>
-    <button type="submit" class="btn btn-primary btn-sm">Ajouter</button>
-</form>
-
-
-
-<!-- Rôles -->
-<h2>Rôles disponibles</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nom</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for role in roles %}
-        <tr>
-            <td>{{ role[1] }}</td>
-            <td>
-                <!-- Supprimer le rôle -->
-                <form method="post" action="/roles/supprimer" style="display:inline;">
-                    <input type="hidden" name="nom" value="{{ role[1] }}">
-                    <button class="btn btn-danger btn-sm">Supprimer</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+        </tbody>
+    </table>
 
     <h3>Ajouter un rôle</h3>
     <form method="post" action="/roles/ajouter" class="mb-4">
@@ -182,75 +166,40 @@
     </form>
 
     <!-- Logs -->
-<h2>Logs d'utilisation</h2>
-<form method="post" action="/logs/vider" style="margin-bottom: 15px;">
-    <button type="submit" class="btn btn-warning btn-sm">Vider les logs</button>
-</form>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>UID carte</th>
-            <th>Rôle</th>
-            <th>Serrure</th>
-            <th>Action</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody>
+    <h2>Logs d'utilisation</h2>
+    <form method="post" action="/logs/vider" style="margin-bottom: 15px;">
+        <button type="submit" class="btn btn-warning btn-sm">Vider les logs</button>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>UID carte</th>
+                <th>Rôle</th>
+                <th>Serrure</th>
+                <th>Action</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for log in logs %}
-        <tr>
-            <td>{{ log[1] }}</td>
-            <td>{{ log[3] }}</td>
-            <td>{{ log[2] }}</td>
-            <td>
-                {% if log[4] == "OPEN" %}
-                    <span class="badge bg-success">OUVERT</span>
-                {% else %}
-                    <span class="badge bg-danger">REFUSÉ</span>
-                {% endif %}
-            </td>
-            <td>{{ log[5] }}</td>
-        </tr>
+            <tr>
+                <td>{{ log[1] }}</td>
+                <td>{{ log[3] }}</td>
+                <td>{{ log[2] }}</td>
+                <td>
+                    {% if log[4] == "OPEN" %}
+                        <span class="badge bg-success">OUVERT</span>
+                    {% else %}
+                        <span class="badge bg-danger">REFUSÉ</span>
+                    {% endif %}
+                </td>
+                <td>{{ log[5] }}</td>
+            </tr>
         {% endfor %}
-    </tbody>
-</table>
-
+        </tbody>
+    </table>
 </div>
 
-<script>
-document.getElementById("pairing-form").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const code = document.getElementById("pairing-code").value;
-
-    const response = await fetch("/pairing/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ code: code })
-    });
-
-    console.log("Réponse fetch:", response.status);
-
-    if (response.ok) {
-        document.getElementById("pairing-status").innerText = "Code envoyé ✅";
-        document.getElementById("pairing-code").value = "";
-    } else {
-        document.getElementById("pairing-status").innerText = "Erreur ❌";
-    }
-});
-
-
-    setInterval(function() {
-        location.reload();
-    }, 60000); // toutes les 60 secondes
-
-    const ws = new WebSocket("ws://127.0.0.1:8000/ws");
-
-    ws.onmessage = function(event) {
-        if (event.data === "update") {
-            location.reload();
-        }
-    };
-</script>
-
+<script src="/static/script.js"></script>
 </body>
 </html>
