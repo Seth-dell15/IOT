@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI
 from routes import cartes, serrures, roles, logs, pairing
 
 app = FastAPI(title="Serrure connectée")
@@ -12,7 +12,7 @@ app.include_router(pairing.router)
 
 # WebSocket + MQTT startup
 connections = []
-from routes.pairing import start_mqtt, notify_clients
+from routes.pairing import start_mqtt
 
 @app.on_event("startup")
 async def startup_event():
