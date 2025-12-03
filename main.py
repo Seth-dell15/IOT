@@ -16,6 +16,7 @@ from fastapi.templating import Jinja2Templates
 from paho.mqtt import client as mqtt_client
 import sqlite3
 import json
+from typing import List
 
 app = FastAPI(title="Serrure connectée")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -30,50 +31,10 @@ TOPIC_PAIRING_CONFIRM = "serrure/pairing/confirm"
 
 
 # --- Base de donnée SQLite ---
-conn = sqlite3.connect("serrure.db", check_same_thread=False)
-cursor = conn.cursor()
-
-# Table cartes
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS cartes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uid TEXT UNIQUE,
-    role TEXT
-)
-""")
-
-# Table serrures
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS serrures (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uid TEXT UNIQUE,
-    nom TEXT,
-    roles_autorises TEXT
-)
-""")
-
-# Table roles
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS roles (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT UNIQUE
-)
-""")
-
-# Table logs
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS logs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uid_carte TEXT,
-    uid_serrure TEXT,
-    role TEXT,
-    action TEXT,
-    date_utilisation DATETIME DEFAULT CURRENT_TIMESTAMP
-)
-""")
-
-
-conn.commit()
+import database as db
+db.init_db()  # initialise la base au lancement
+cursor = db.get_cursor()
+conn = db.get_conn()
 
 
 from fastapi import WebSocket
@@ -114,7 +75,6 @@ def pairing_send(code: str = Form(...)):
 
 
 
-from typing import List
 
 @app.post("/serrures/ajouter")
 def ajouter_serrure(
