@@ -52,33 +52,11 @@ Il pourra ainsi surveiller les échanges sur le broker, identifier les cartes RF
 
 *PascalCase* : nom de fonctions et fichiers, *camelcase* pour les variables
 
+# Commande pour lancer le server web :
 
-# Structure du projet 
-
+Dans le dossier IOT : 
 ```
-IOT/
-│
-├─ main.py                  # Point d'entrée, inclut tout : routes, WebSocket, MQTT
-├─ db.py                    # Initialisation de la base de données (init_db)
-├─ mqtt_handler.py          # Connexion et gestion MQTT
-├─ utils.py                 # Fonctions utilitaires, ex : connections WebSocket, notify_clients
-│
-├─ routes/                  # Routes séparées par type d'objet, si tu veux organiser (optionnel)
-│  ├─ cartes.py             # Routes /cartes/... (ajout, suppression, modification)
-│  ├─ serrures.py           # Routes /serrures/...
-│  ├─ roles.py              # Routes /roles/...
-│  ├─ logs.py               # Routes /logs/...
-│  └─ __init__.py           # Pour que le dossier soit un package Python
-│
-├─ templates/
-│  └─ index.html            # Page unique qui affiche tout : cartes, serrures, rôles, logs
-│
-├─ static/
-│  ├─ styles.css            # Styles CSS
-│  └─ script.js             # JS de la page (WebSocket, fetch, refresh)
-│
-└─ serrure.db               # Base de données SQLite
-
+python -m uvicorn main:app --reload
 ```
 
 _LEFEBBVRE Lou, CABANES Hugo, CAETANO Maël_
