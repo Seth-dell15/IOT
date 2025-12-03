@@ -50,13 +50,36 @@ Il pourra ainsi surveiller les échanges sur le broker, identifier les cartes RF
 
 # Convention de nommage
 
-*PascalCase* : nom de fonctions et fichiers, *camelcase* pour les variables
+*snake_case* : nom de fonctions, fichiers et les variables,
+*UPPERCASE* : constantes
 
 # Commande pour lancer le server web :
 
 Dans le dossier IOT : 
 ```
 python -m uvicorn main:app --reload
+```
+
+# Structure du projet :
+
+``` 
+IOT/
+│
+├─ main.py                # FastAPI app + startup MQTT + WebSocket + include_router
+├─ database.py            # Connexion SQLite + init_db
+├─ routes/
+│   ├─ cartes.py          # APIRouter cartes
+│   ├─ serrures.py        # APIRouter serrures
+│   ├─ roles.py           # APIRouter roles
+│   ├─ logs.py            # APIRouter logs
+│   └─ pairing.py         # APIRouter pairing (MQTT fonctions, sans startup_event)
+├─ static/
+│   ├─ script.js          
+│   └─ styles.css
+├─ templates/        
+│   └─ index.html
+└─ 
+
 ```
 
 _LEFEBBVRE Lou, CABANES Hugo, CAETANO Maël_
